@@ -6,7 +6,7 @@ This is a [Growl](http://growl.info) script for [Irssi](http://irssi.org/) Inter
 
 Make sure that **growlnotify** is in your `PATH`. You can find it in the Growl installation disk image, or you can install it via [Homebrew](http://mxcl.github.com/homebrew) or  [MacPorts](http://www.macports.org).
 
-Copy *growl.pl* to *~/.irssi/scripts/autorun/growl.pl*. If you wish to have a pretty icon in the notifications, find a 512x512 PNG then drop it into *~/.irssi/icon.png*.
+Move *growl.pl* to *~/.irssi/scripts/autorun/growl.pl* and *icon.png* to *~/.irssi/icon.png*.
 
 ## Settings
 
