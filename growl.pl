@@ -139,7 +139,7 @@ sub sig_print_text ($$$) {
     my $nick;
     my $data;
     if ($dest->{level} & MSGLEVEL_HILIGHT) {
-        $stripped =~ /\s*(\w*)\s:\s(.*)/;
+        $stripped =~ /^\s*\b(\w+)\b[^:]*:\s*(.*)$/;
         $nick = $1;
         $data = $2;
         growl_notify(
