@@ -1,7 +1,8 @@
 #!/usr/bin/env perl -w
 #
-# This is an Irssi script to send out Growl notifications over the network using
-# growlnotify. It is based on the original Growl script by Nelson Elhage and Toby Peterson.
+# This is an Irssi script to send out Growl notifications over the network
+# using growlnotify. It is inspired by the original Growl script by
+# Nelson Elhage and Toby Peterson.
 
 use strict;
 use vars qw($VERSION %IRSSI);
@@ -10,7 +11,7 @@ use Irssi;
 
 $VERSION = '1.0.0';
 %IRSSI = (
-  authors     =>  'Sorin Ionescu, based on original script by Nelson Elhage and Toby Peterson',
+  authors     =>  'Sorin Ionescu',
   contact     =>  'sorin.ionescu@gmail.com',
   name        =>  'Growl',
   description =>  'Sends out Growl notifications from Irssi',
@@ -21,14 +22,17 @@ $VERSION = '1.0.0';
 # Notification Settings
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_message_public', 0);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_message_private', 1);
+Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_message_action', 1);
+Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_message_notice', 0);
+Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_message_invite', 1);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_hilight', 1);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_notifylist', 1);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_server', 1);
-Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_channel', 0);
+Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_channel_join', 0);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_channel_mode', 0);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_channel_topic', 1);
-Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_event_notice', 0);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_dcc_request', 1);
+Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_dcc_closed', 1);
 
 # Network Settings
 Irssi::settings_add_str($IRSSI{'name'}, 'growl_net_host', 'localhost');
@@ -47,14 +51,17 @@ sub cmd_help {
     Irssi::print('%WNotification Settings%n');
     Irssi::print('  %ygrowl_show_message_public%n : Notify on public message. (ON/OFF/TOGGLE)');
     Irssi::print('  %ygrowl_show_message_private%n : Notify on private message. (ON/OFF/TOGGLE)');
+    Irssi::print('  %ygrowl_show_message_action%n : Notify on action message. (ON/OFF/TOGGLE)');
+    Irssi::print('  %ygrowl_show_message_notice%n : Notify on notice message. (ON/OFF/TOGGLE)');
+    Irssi::print('  %ygrowl_show_message_invite%n : Notify on channel invitation message. (ON/OFF/TOGGLE)');
     Irssi::print('  %ygrowl_show_hilight%n : Notify on nick highlight. (ON/OFF/TOGGLE)');
     Irssi::print('  %ygrowl_show_notifylist%n : Notify on notification list connect and disconnect. (ON/OFF/TOGGLE)');
     Irssi::print('  %ygrowl_show_server%n : Notify on server connect and disconnect. (ON/OFF/TOGGLE)');
-    Irssi::print('  %ygrowl_show_channel%n : Notify on channel join. (ON/OFF/TOGGLE)');
+    Irssi::print('  %ygrowl_show_channel_join%n : Notify on channel join. (ON/OFF/TOGGLE)');
     Irssi::print('  %ygrowl_show_channel_mode%n : Notify on channel modes change. (ON/OFF/TOGGLE)');
     Irssi::print('  %ygrowl_show_channel_topic%n : Notify on channel topic change. (ON/OFF/TOGGLE)');
-    Irssi::print('  %ygrowl_show_event_notice%n : Notify on event notice. (ON/OFF/TOGGLE)');
-    Irssi::print('  %ygrowl_show_dcc_request%n : Notify on dcc request. (ON/OFF/TOGGLE)');
+    Irssi::print('  %ygrowl_show_dcc_request%n : Notify on DCC chat request. (ON/OFF/TOGGLE)');
+    Irssi::print('  %ygrowl_show_dcc_closed%n : Notify on DCC chat/file transfer closing. (ON/OFF/TOGGLE)');
     
     Irssi::print('%WNetwork Settings%n');
     Irssi::print('  %ygrowl_net_host%n : Set the Growl server host.');
@@ -83,7 +90,7 @@ sub get_sticky {
     }
 }
 
-sub growl_notify ($$$$) {
+sub growl_notify {
     my $GrowlHost     = Irssi::settings_get_str('growl_net_host');
     my $GrowlPort     = Irssi::settings_get_str('growl_net_port');
     my $GrowlPass     = Irssi::settings_get_str('growl_net_pass');
@@ -111,164 +118,201 @@ sub growl_notify ($$$$) {
     );
 }
 
-sub sig_message_public ($$$$) {
+sub sig_message_public {
     return unless Irssi::settings_get_bool('growl_show_message_public');
-    my ($server, $data, $nick, $address) = @_;
-    growl_notify(
-        "Channel Notification",
-        "Public Message",
-        "$nick: $data",
-        0
-    );
+    my ($server, $msg, $nick, $address, $target) = @_;
+    growl_notify("Channel", "Public Message", "$nick: $msg", 0);
 }
 
-sub sig_message_private ($$$$) {
+sub sig_message_private {
     return unless Irssi::settings_get_bool('growl_show_message_private');
-    my ($server, $data, $nick, $address) = @_;
+    my ($server, $msg, $nick, $address) = @_;
+    growl_notify("Message", "Private Message", "$nick: $msg", 1);
+}
+
+sub sig_message_dcc {
+    return unless Irssi::settings_get_bool('growl_show_message_private');
+    my ($dcc, $msg) = @_;
+    growl_notify("DCC", "Private Message", "$dcc->{nick}: $msg", 1);
+}
+
+sub sig_ctcp_action {
+    return unless Irssi::settings_get_bool('growl_show_message_action');
+    my ($server, $args, $nick, $address, $target) = @_;
+    growl_notify("Message", "Action Message", "$nick: $args", 1);
+}
+
+sub sig_message_dcc_action {
+    return unless Irssi::settings_get_bool('growl_show_message_action');
+    my ($dcc, $msg) = @_;
+    growl_notify("DCC", "Direct Chat Action Message", "$dcc->{nick}: $msg", 1);
+}
+
+sub sig_event_notice {
+    return unless Irssi::settings_get_bool('growl_show_message_notice');
+    my ($server, $data, $source) = @_;
+    $data =~ s/^[^:]*://;
+    growl_notify("Message", "Notice Message", "$source: $data", 1);
+}
+
+sub sig_message_invite {
+    return unless Irssi::settings_get_bool('growl_show_message_invite');
+    my ($server, $channel, $nick, $address) = @_;
     growl_notify(
-        "Message Notification",
-        "Private Message",
-        "$nick: $data",
+        "Message",
+        "Channel Invitation",
+        "$nick has invited you to join $channel.",
         1
     );
 }
 
-sub sig_print_text ($$$) {
+sub sig_print_text {
     return unless Irssi::settings_get_bool('growl_show_hilight');
     my ($dest, $text, $stripped) = @_;
     my $nick;
-    my $data;
+    my $msg;
     if ($dest->{level} & MSGLEVEL_HILIGHT) {
         $stripped =~ /^\s*\b(\w+)\b[^:]*:\s*(.*)$/;
         $nick = $1;
-        $data = $2;
-        growl_notify(
-            "Hilight Notification",
-            "Highlighted Message",
-            "$nick: $data",
-            1
-        );
+        $msg = $2;
+        growl_notify("Hilight", "Highlighted Message", "$nick: $msg", 2);
     }
 }
 
-sub sig_notifylist_joined ($$$$$$) {
+sub sig_notifylist_joined {
     return unless Irssi::settings_get_bool('growl_show_notifylist');
-    my ($server, $nick, $user, $host, $realname, $away) = @_;
+    my ($server, $nick, $user, $host, $realname, $awaymsg) = @_;
     growl_notify(
-        "Notify List Notification",
+        "Notify List",
         "Friend Connected",
         ("$realname" || "$nick") . " has connected to $server->{chatnet}.",
         0
     );
 }
 
-sub sig_notifylist_left ($$$$$$) {
+sub sig_notifylist_left {
     return unless Irssi::settings_get_bool('growl_show_notifylist');
-    my ($server, $nick, $user, $host, $realname, $away) = @_;
+    my ($server, $nick, $user, $host, $realname, $awaymsg) = @_;
     growl_notify(
-        "Notify List Notification",
+        "Notify List",
         "Friend Disconnected",
         ("$realname" || "$nick") . " has disconnected from $server->{chatnet}.",
         0
     );
 }
 
-sub sig_server_connected ($$$$$$) {
+sub sig_server_connected {
     return unless Irssi::settings_get_bool('growl_show_server');
     my($server) = @_;
     growl_notify(
-        "Server Notification",
+        "Server", 
         "Server Connected",
         "Connected to network $server->{chatnet}.",
         0
     );
 }
 
-sub sig_server_disconnected ($$$$$$) {
+sub sig_server_disconnected {
     return unless Irssi::settings_get_bool('growl_show_server');
     my($server) = @_;
     growl_notify(
-        "Server Notification",
+        "Server",
         "Server Disconnected",
         "Disconnected from network $server->{chatnet}.",
         0
     );
 }
 
-sub sig_channel_joined ($$$$$$) {
-    return unless Irssi::settings_get_bool('growl_show_channel');
+sub sig_channel_joined {
+    return unless Irssi::settings_get_bool('growl_show_channel_join');
     my ($channel) = @_;
     growl_notify(
-        "Channel Notification",
+        "Channel",
         "Channel Joined",
         "Joined channel $channel->{name}.",
         0
     );
 }
 
-sub sig_channel_mode_changed ($$$$$$) {
+sub sig_channel_mode_changed {
     return unless Irssi::settings_get_bool('growl_show_channel_mode');
     my ($channel) = @_;
     growl_notify(
-        "Channel Notification",
+        "Channel",
         "Channel Modes",
         "$channel->{name}: $channel->{mode}",
         0
     );
 }
 
-sub sig_channel_topic_changed ($$$$$$) {
+sub sig_channel_topic_changed {
     return unless Irssi::settings_get_bool('growl_show_channel_topic');
     my ($channel) = @_;
     growl_notify(
-        "Channel Notification",
+        "Channel",
         "Channel Topic",
         "$channel->{name}: $channel->{topic}",
         0
     );
 }
 
-sub sig_event_notice ($$$$$$) {
-    return unless Irssi::settings_get_bool('growl_show_event_notice');
-    my ($server, $data, $source) = @_;
-    $data =~ s/^[^:]*://;
-    growl_notify(
-        "Message Notification",
-        "Notice Message",
-        "$source: $data",
-        1
-    );
-}
-
-sub sig_dcc_request ($$$$$$) {
+sub sig_dcc_request {
     return unless Irssi::settings_get_bool('growl_show_dcc_request');
     my ($dcc, $sendaddr) = @_;
-   
+    my $title;
+    my $message;
     if ($dcc->{type} =~ /CHAT/) {
-        growl_notify(
-            "DCC Notification",
-            "DCC Chat Request",
-            "$dcc->{nick} wants to chat directly.",
-            0
-        );
+        $title = "Direct Chat Request";
+        $message = "$dcc->{nick} wants to chat directly.";
+    }
+    if ($dcc->{type} =~ /GET/) {
+        $title = "File Transfer Request";
+        $message = "$dcc->{nick} wants to send you $dcc->{arg}.";
+    }
+    growl_notify("DCC", $title, $message, 0);
+}
+
+sub sig_dcc_closed {
+    return unless Irssi::settings_get_bool('growl_show_dcc_closed');
+    my ($dcc) = @_;
+    my $title;
+    my $message;
+    if ($dcc->{type} =~ /GET|SEND/) {
+        if ($dcc->{size} == $dcc->{transfd}) {
+            if ($dcc->{type} =~ /GET/) {
+                $title = "Download Complete";
+            }
+            if ($dcc->{type} =~ /SEND/) {
+                $title = "Upload Complete";
+            }
+        }
+        else {
+            if ($dcc->{type} =~ /GET/) {
+                $title = "Download Failed";
+            }
+            if ($dcc->{type} =~ /SEND/) {
+                $title = "Upload Failed";
+            }
+        }
+        $message = $dcc->{arg};
     }
 
-    if ($dcc->{type} =~ /GET/) {
-        growl_notify(
-            "DCC Notification",
-            "DCC File Transfer",
-            "$dcc->{nick} wants to send you a file.",
-            0
-        );
+    if ($dcc->{type} =~ /CHAT/) {
+        $title = "Direct Chat Ended";
+        $message = "Direct chat with $dcc->{nick} has ended.";
     }
+    growl_notify("DCC", $title, $message, 0);
 }
 
 Irssi::command_bind('growl', 'cmd_help');
 
 Irssi::signal_add_last('message public', \&sig_message_public);
 Irssi::signal_add_last('message private', \&sig_message_private);
-Irssi::signal_add_last('dcc request', \&sig_dcc_request);
+Irssi::signal_add_last('message dcc', \&sig_message_dcc);
+Irssi::signal_add_last('ctcp action', \&sig_ctcp_action);
+Irssi::signal_add_last('message dcc action', \&sig_message_dcc_action);
 Irssi::signal_add_last('event notice', \&sig_event_notice);
+Irssi::signal_add_last('message invite', \&sig_message_invite);
 Irssi::signal_add_last('print text', \&sig_print_text);
 Irssi::signal_add_last('notifylist joined', \&sig_notifylist_joined);
 Irssi::signal_add_last('notifylist left', \&sig_notifylist_left);
@@ -277,4 +321,6 @@ Irssi::signal_add_last('server disconnected', \&sig_server_disconnected);
 Irssi::signal_add_last('channel joined', \&sig_channel_joined);
 Irssi::signal_add_last('channel mode changed', \&sig_channel_mode_changed);
 Irssi::signal_add_last('channel topic changed', \&sig_channel_topic_changed);
+Irssi::signal_add_last('dcc request', \&sig_dcc_request);
+Irssi::signal_add_last('dcc closed', \&sig_dcc_closed);
 
