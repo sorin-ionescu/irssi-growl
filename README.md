@@ -8,6 +8,8 @@ Make sure that **growlnotify** is in your `PATH`. You can find it in the Growl i
 
 Move *growl.pl* to *~/.irssi/scripts/autorun/growl.pl* and *icon.png* to *~/.irssi/icon.png*.
 
+The network settings **DO NOT** need to be populated for local Growl notifications.
+
 ## Settings
 
 ### Notification Settings
@@ -19,6 +21,18 @@ Notify on public message. (ON/OFF/TOGGLE)
 `growl_show_message_private`
 
 Notify on private message. (ON/OFF/TOGGLE)
+
+`growl_show_message_action`
+
+Notify on action message. (ON/OFF/TOGGLE)
+
+`growl_show_message_notice`
+
+Notify on notice message. (ON/OFF/TOGGLE)
+
+`growl_show_message_invite`
+
+Notify on channel invitation message. (ON/OFF/TOGGLE)
 
 `growl_show_hilight`
 
@@ -32,7 +46,7 @@ Notify on notification list connect and disconnect. (ON/OFF/TOGGLE)
 
 Notify on server connect and disconnect. (ON/OFF/TOGGLE)
 
-`growl_show_channel`
+`growl_show_channel_join`
 
 Notify on channel join. (ON/OFF/TOGGLE)
 
@@ -44,13 +58,13 @@ Notify on channel modes change. (ON/OFF/TOGGLE)
 
 Notify on channel topic change. (ON/OFF/TOGGLE)
 
-`growl_show_event_notice`
-
-Notify on event notice. (ON/OFF/TOGGLE)
-
 `growl_show_dcc_request`
 
-Notify on dcc request. (ON/OFF/TOGGLE)
+Notify on DCC chat request. (ON/OFF/TOGGLE)
+
+`growl_show_dcc_closed`
+
+Notify on DCC chat/file transfer termination. (ON/OFF/TOGGLE)
 
 ### Network Settings
 
@@ -81,3 +95,4 @@ Set sticky notifications. (ON/OFF/TOGGLE)
 `growl_net_sticky_away`
 
 Set sticky notifications only when away. (ON/OFF/TOGGLE)
+
