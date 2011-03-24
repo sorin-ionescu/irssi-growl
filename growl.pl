@@ -1,7 +1,7 @@
 #!/usr/bin/env perl -w
 
 # growl.pl 
-# Copyright (C) 2011 Sorin Ionescu (sorin.ionescu@gmail.com)
+# Copyright (C) 2011 Sorin Ionescu <sorin.ionescu@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -74,7 +74,7 @@ sub cmd_help {
     Irssi::print('  %ygrowl_show_channel_mode%n : Notify on channel modes change. (ON/OFF/TOGGLE)');
     Irssi::print('  %ygrowl_show_channel_topic%n : Notify on channel topic change. (ON/OFF/TOGGLE)');
     Irssi::print('  %ygrowl_show_dcc_request%n : Notify on DCC chat request. (ON/OFF/TOGGLE)');
-    Irssi::print('  %ygrowl_show_dcc_closed%n : Notify on DCC chat/file transfer closing. (ON/OFF/TOGGLE)');
+    Irssi::print('  %ygrowl_show_dcc_closed%n : Notify on DCC chat/file transfer termination. (ON/OFF/TOGGLE)');
     
     Irssi::print('%WNetwork Settings%n');
     Irssi::print('  %ygrowl_net_host%n : Set the Growl server host.');
