@@ -1,8 +1,7 @@
 #!/usr/bin/env perl -w
 #
-# This is an Irssi script to send out Growl notifications over the network
-# using growlnotify. It is inspired by the original Growl script by
-# Nelson Elhage and Toby Peterson.
+# This scripts adds Growl support to Irssi to sendusing growlnotify. It is
+# inspired by the original Growl script by Nelson Elhage and Toby Peterson.
 
 use strict;
 use vars qw($VERSION %IRSSI);
@@ -11,12 +10,12 @@ use Irssi;
 
 $VERSION = '1.0.0';
 %IRSSI = (
-  authors     =>  'Sorin Ionescu',
-  contact     =>  'sorin.ionescu@gmail.com',
-  name        =>  'Growl',
-  description =>  'Sends out Growl notifications from Irssi',
-  license     =>  'BSD',
-  url         =>  'http://github.com/sorin-ionescu/irssi-growl',
+    authors     => 'Sorin Ionescu',
+    contact     => 'sorin.ionescu@gmail.com',
+    name        => 'Growl',
+    description => 'Sends out Growl notifications from Irssi',
+    license     => 'BSD',
+    url         => 'http://github.com/sorin-ionescu/irssi-growl',
 );
 
 # Notification Settings
@@ -35,9 +34,9 @@ Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_dcc_request', 1);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_dcc_closed', 1);
 
 # Network Settings
-Irssi::settings_add_str($IRSSI{'name'}, 'growl_net_host', 'localhost');
-Irssi::settings_add_str($IRSSI{'name'}, 'growl_net_port', '23053');
-Irssi::settings_add_str($IRSSI{'name'}, 'growl_net_pass', 'password');
+Irssi::settings_add_str($IRSSI{'name'}, 'growl_net_host', '');
+Irssi::settings_add_str($IRSSI{'name'}, 'growl_net_port', '');
+Irssi::settings_add_str($IRSSI{'name'}, 'growl_net_pass', '');
 
 # Icon Settings
 Irssi::settings_add_str($IRSSI{'name'}, 'growl_net_icon', '$HOME/.irssi/icon.png');
@@ -91,31 +90,36 @@ sub get_sticky {
 }
 
 sub growl_notify {
-    my $GrowlHost     = Irssi::settings_get_str('growl_net_host');
-    my $GrowlPort     = Irssi::settings_get_str('growl_net_port');
-    my $GrowlPass     = Irssi::settings_get_str('growl_net_pass');
-    my $GrowlIcon     = Irssi::settings_get_str('growl_net_icon');
-    my $GrowlSticky   = get_sticky() == 1 ? " --sticky" : "";
-    my $AppName       = "Irssi";
+    my $host   = Irssi::settings_get_str('growl_net_host');
+    my $port   = Irssi::settings_get_str('growl_net_port');
+    my $pass   = Irssi::settings_get_str('growl_net_pass');
+    my $icon   = Irssi::settings_get_str('growl_net_icon');
+    my $sticky = get_sticky() == 1 ? " --sticky" : "";
+    my $name   = "Irssi";
     
     my ($event, $title, $message, $priority) = @_;
-    
     $message =~ s/(")/\\$1/g;
+    
+    my $command = "growlnotify"
+        . " --name \"$name\"";
+    
+    if ($host !~ /^localhost|127\.0\.0\.1|$/) {
+        $command .=
+              " --host \"$host\""
+            . " --port \"$port\""
+            . " --password \"$pass\""
+    }
 
-    system(
-        "growlnotify" 
-        . " --name \"$AppName\""
-        . " --host \"$GrowlHost\""
-        . " --port \"$GrowlPort\""
-        . " --password \"$GrowlPass\""
-        . " --image \"$GrowlIcon\""
+    $command .=
+          " --image \"$icon\""
         . " --priority \"$priority\""
         . " --identifier \"$event\""
         . " --title \"$title\""
         . " --message \"$message\""
-        . "$GrowlSticky"
-        . " >> /dev/null 2>&1"
-    );
+        . "$sticky"
+        . " >> /dev/null 2>&1";
+
+    system($command);
 }
 
 sub sig_message_public {
