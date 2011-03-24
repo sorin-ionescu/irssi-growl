@@ -22,7 +22,7 @@ use vars qw($VERSION %IRSSI);
 
 use Irssi;
 
-$VERSION = '1.0.0';
+$VERSION = '1.0.1';
 %IRSSI = (
     authors     => 'Sorin Ionescu',
     contact     => 'sorin.ionescu@gmail.com',
@@ -139,45 +139,45 @@ sub growl_notify {
 sub sig_message_public {
     return unless Irssi::settings_get_bool('growl_show_message_public');
     my ($server, $msg, $nick, $address, $target) = @_;
-    growl_notify("Channel", "Public Message", "$nick: $msg", 0);
+    growl_notify("Public", "Public Message", "$nick: $msg", 0);
 }
 
 sub sig_message_private {
     return unless Irssi::settings_get_bool('growl_show_message_private');
     my ($server, $msg, $nick, $address) = @_;
-    growl_notify("Message", "Private Message", "$nick: $msg", 1);
+    growl_notify("Private", "Private Message", "$nick: $msg", 1);
 }
 
 sub sig_message_dcc {
     return unless Irssi::settings_get_bool('growl_show_message_private');
     my ($dcc, $msg) = @_;
-    growl_notify("DCC", "Private Message", "$dcc->{nick}: $msg", 1);
+    growl_notify("Private", "Private Message", "$dcc->{nick}: $msg", 1);
 }
 
 sub sig_ctcp_action {
     return unless Irssi::settings_get_bool('growl_show_message_action');
     my ($server, $args, $nick, $address, $target) = @_;
-    growl_notify("Message", "Action Message", "$nick: $args", 1);
+    growl_notify("Action", "Action Message", "$nick: $args", 1);
 }
 
 sub sig_message_dcc_action {
     return unless Irssi::settings_get_bool('growl_show_message_action');
     my ($dcc, $msg) = @_;
-    growl_notify("DCC", "Direct Chat Action Message", "$dcc->{nick}: $msg", 1);
+    growl_notify("Action", "Action Message", "$dcc->{nick}: $msg", 1);
 }
 
 sub sig_event_notice {
     return unless Irssi::settings_get_bool('growl_show_message_notice');
     my ($server, $data, $source) = @_;
     $data =~ s/^[^:]*://;
-    growl_notify("Message", "Notice Message", "$source: $data", 1);
+    growl_notify("Notice", "Notice Message", "$source: $data", 1);
 }
 
 sub sig_message_invite {
     return unless Irssi::settings_get_bool('growl_show_message_invite');
     my ($server, $channel, $nick, $address) = @_;
     growl_notify(
-        "Message",
+        "Invite",
         "Channel Invitation",
         "$nick has invited you to join $channel.",
         1
@@ -295,6 +295,7 @@ sub sig_dcc_closed {
     my ($dcc) = @_;
     my $title;
     my $message;
+
     if ($dcc->{type} =~ /GET|SEND/) {
         if ($dcc->{size} == $dcc->{transfd}) {
             if ($dcc->{type} =~ /GET/) {
