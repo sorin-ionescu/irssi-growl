@@ -28,7 +28,7 @@ $VERSION = '1.0.0';
     contact     => 'sorin.ionescu@gmail.com',
     name        => 'Growl',
     description => 'Sends Growl notifications from Irssi',
-    license     => 'GPL3',
+    license     => 'GPLv3',
     url         => 'http://github.com/sorin-ionescu/irssi-growl',
 );
 
