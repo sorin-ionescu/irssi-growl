@@ -2,6 +2,8 @@
 
 This is a [Growl](http://growl.info) script for [Irssi](http://irssi.org/) Internet Relay Chat client.
 
+For my [Irssi](http://weechat.org) Growl plugin, see [Irssi Growl](https://github.com/sorin-ionescu/weechat-growl).
+
 ## Installation
 
 Make sure that **growlnotify** is in your `PATH`. You can find it in the Growl installation disk image, or you can install it via [Homebrew](http://mxcl.github.com/homebrew) or  [MacPorts](http://www.macports.org).
@@ -46,25 +48,14 @@ Notify on notification list connect and disconnect. (ON/OFF/TOGGLE)
 
 Notify on server connect and disconnect. (ON/OFF/TOGGLE)
 
-`growl_show_channel_join`
-
-Notify on channel join. (ON/OFF/TOGGLE)
-
-`growl_show_channel_mode`
-
-Notify on channel modes change. (ON/OFF/TOGGLE)
 
 `growl_show_channel_topic`
 
 Notify on channel topic change. (ON/OFF/TOGGLE)
 
-`growl_show_dcc_request`
+`growl_show_dcc`
 
-Notify on DCC chat request. (ON/OFF/TOGGLE)
-
-`growl_show_dcc_closed`
-
-Notify on DCC chat/file transfer termination. (ON/OFF/TOGGLE)
+Notify on DCC chat/file transfer messages. (ON/OFF/TOGGLE)
 
 ### Network Settings
 

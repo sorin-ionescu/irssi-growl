@@ -1,7 +1,7 @@
 #!/usr/bin/env perl -w
 
 # growl.pl 
-# Copyright (C) 2011 Sorin Ionescu <sorin.ionescu@gmail.com>
+# Copyright (c) 2011 Sorin Ionescu <sorin.ionescu@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ use vars qw($VERSION %IRSSI);
 
 use Irssi;
 
-$VERSION = '1.0.1';
+$VERSION = '1.0.2';
 %IRSSI = (
     authors     => 'Sorin Ionescu',
     contact     => 'sorin.ionescu@gmail.com',
@@ -41,11 +41,8 @@ Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_message_invite', 1);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_hilight', 1);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_notifylist', 1);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_server', 1);
-Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_channel_join', 0);
-Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_channel_mode', 0);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_channel_topic', 1);
-Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_dcc_request', 1);
-Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_dcc_closed', 1);
+Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_dcc', 1);
 
 # Network Settings
 Irssi::settings_add_str($IRSSI{'name'}, 'growl_net_host', '');
@@ -70,11 +67,8 @@ sub cmd_help {
     Irssi::print('  %ygrowl_show_hilight%n : Notify on nick highlight. (ON/OFF/TOGGLE)');
     Irssi::print('  %ygrowl_show_notifylist%n : Notify on notification list connect and disconnect. (ON/OFF/TOGGLE)');
     Irssi::print('  %ygrowl_show_server%n : Notify on server connect and disconnect. (ON/OFF/TOGGLE)');
-    Irssi::print('  %ygrowl_show_channel_join%n : Notify on channel join. (ON/OFF/TOGGLE)');
-    Irssi::print('  %ygrowl_show_channel_mode%n : Notify on channel modes change. (ON/OFF/TOGGLE)');
     Irssi::print('  %ygrowl_show_channel_topic%n : Notify on channel topic change. (ON/OFF/TOGGLE)');
-    Irssi::print('  %ygrowl_show_dcc_request%n : Notify on DCC chat request. (ON/OFF/TOGGLE)');
-    Irssi::print('  %ygrowl_show_dcc_closed%n : Notify on DCC chat/file transfer termination. (ON/OFF/TOGGLE)');
+    Irssi::print('  %ygrowl_show_dcc_request%n : Notify on DCC chat/file transfer messeges. (ON/OFF/TOGGLE)');
     
     Irssi::print('%WNetwork Settings%n');
     Irssi::print('  %ygrowl_net_host%n : Set the Growl server host.');
@@ -241,28 +235,6 @@ sub sig_server_disconnected {
     );
 }
 
-sub sig_channel_joined {
-    return unless Irssi::settings_get_bool('growl_show_channel_join');
-    my ($channel) = @_;
-    growl_notify(
-        "Channel",
-        "Channel Joined",
-        "Joined channel $channel->{name}.",
-        0
-    );
-}
-
-sub sig_channel_mode_changed {
-    return unless Irssi::settings_get_bool('growl_show_channel_mode');
-    my ($channel) = @_;
-    growl_notify(
-        "Channel",
-        "Channel Modes",
-        "$channel->{name}: $channel->{mode}",
-        0
-    );
-}
-
 sub sig_channel_topic_changed {
     return unless Irssi::settings_get_bool('growl_show_channel_topic');
     my ($channel) = @_;
@@ -275,7 +247,7 @@ sub sig_channel_topic_changed {
 }
 
 sub sig_dcc_request {
-    return unless Irssi::settings_get_bool('growl_show_dcc_request');
+    return unless Irssi::settings_get_bool('growl_show_dcc');
     my ($dcc, $sendaddr) = @_;
     my $title;
     my $message;
@@ -291,7 +263,7 @@ sub sig_dcc_request {
 }
 
 sub sig_dcc_closed {
-    return unless Irssi::settings_get_bool('growl_show_dcc_closed');
+    return unless Irssi::settings_get_bool('growl_show_dcc');
     my ($dcc) = @_;
     my $title;
     my $message;
@@ -337,8 +309,6 @@ Irssi::signal_add_last('notifylist joined', \&sig_notifylist_joined);
 Irssi::signal_add_last('notifylist left', \&sig_notifylist_left);
 Irssi::signal_add_last('server connected', \&sig_server_connected);
 Irssi::signal_add_last('server disconnected', \&sig_server_disconnected);
-Irssi::signal_add_last('channel joined', \&sig_channel_joined);
-Irssi::signal_add_last('channel mode changed', \&sig_channel_mode_changed);
 Irssi::signal_add_last('channel topic changed', \&sig_channel_topic_changed);
 Irssi::signal_add_last('dcc request', \&sig_dcc_request);
 Irssi::signal_add_last('dcc closed', \&sig_dcc_closed);
