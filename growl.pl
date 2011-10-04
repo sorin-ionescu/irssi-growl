@@ -194,7 +194,7 @@ sub sig_print_text {
         $stripped =~ /^\s*\b(\w+)\b[^:]*:\s*(.*)$/;
         $nick = $1;
         $msg = $2;
-        growl_notify("Hilight", "Highlighted Message", "$nick: $msg", 2);
+        growl_notify("Highlight", "Highlighted Message", "$nick: $msg", 2);
     }
 }
 
