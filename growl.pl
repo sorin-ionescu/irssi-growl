@@ -1,6 +1,6 @@
 #!/usr/bin/env perl -w
 
-# growl.pl 
+# growl.pl
 # Copyright (c) 2011 Sorin Ionescu <sorin.ionescu@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -93,15 +93,15 @@ sub cmd_help {
     Irssi::print('  %ygrowl_show_server%n : Notify on server connect and disconnect. (ON/OFF/TOGGLE)');
     Irssi::print('  %ygrowl_show_channel_topic%n : Notify on channel topic change. (ON/OFF/TOGGLE)');
     Irssi::print('  %ygrowl_show_dcc_request%n : Notify on DCC chat/file transfer messeges. (ON/OFF/TOGGLE)');
-    
+
     Irssi::print('%WNetwork Settings%n');
     Irssi::print('  %ygrowl_net_host%n : Set the Growl server host.');
     Irssi::print('  %ygrowl_net_port%n : Set the Growl server port.');
     Irssi::print('  %ygrowl_net_pass%n : Set the Growl server password.');
-    
+
     Irssi::print('%WIcon Settings%n');
     Irssi::print('  %ygrowl_net_icon%n : Set the Growl notification icon path.');
-    
+
     Irssi::print('%WSticky Settings%n');
     Irssi::print('  %ygrowl_net_sticky%n : Set sticky notifications. (ON/OFF/TOGGLE)');
     Irssi::print('  %ygrowl_net_sticky_away%n : Set sticky notifications only when away. (ON/OFF/TOGGLE)');
@@ -224,7 +224,7 @@ sub sig_server_connected {
     return unless Irssi::settings_get_bool('growl_show_server');
     my($server) = @_;
     growl_notify(
-        "Server", 
+        "Server",
         "Server Connected",
         "Connected to network $server->{chatnet}.",
         0
