@@ -6,7 +6,7 @@ For my [Irssi](http://weechat.org) Growl plugin, see [Irssi Growl](https://githu
 
 ## Installation
 
-Make sure that **growlnotify** is in your `PATH`. You can find it in the Growl installation disk image, or you can install it via [Homebrew](http://mxcl.github.com/homebrew) or  [MacPorts](http://www.macports.org).
+Make sure that you have the [Growl::GNTP](http://search.cpan.org/perldoc?Growl::GNTP) Perl module installed.
 
 Move *growl.pl* to *~/.irssi/scripts/autorun/growl.pl* and *icon.png* to *~/.irssi/icon.png*.
 
