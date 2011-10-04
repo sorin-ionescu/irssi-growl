@@ -21,6 +21,7 @@ use strict;
 use vars qw($VERSION %IRSSI);
 
 use Irssi;
+use Growl::GNTP;
 
 $VERSION = '1.0.2';
 %IRSSI = (
@@ -50,11 +51,34 @@ Irssi::settings_add_str($IRSSI{'name'}, 'growl_net_port', '');
 Irssi::settings_add_str($IRSSI{'name'}, 'growl_net_pass', '');
 
 # Icon Settings
-Irssi::settings_add_str($IRSSI{'name'}, 'growl_net_icon', '$HOME/.irssi/icon.png');
+Irssi::settings_add_str($IRSSI{'name'}, 'growl_net_icon', 'icon.png');
 
 # Sticky Settings
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_net_sticky', 0);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_net_sticky_away', 1);
+
+# Growl Initialization
+my $growl = Growl::GNTP->new(
+    AppName  => "Irssi",
+    PeerHost => Irssi::settings_get_str('growl_net_host'),
+    PeerPort => Irssi::settings_get_str('growl_net_port'),
+    AppIcon  => Irssi::settings_get_str('growl_net_icon'),
+    Password => Irssi::settings_get_str('growl_net_pass'),
+);
+
+# Growl Registration
+$growl->register([
+    { Name => "Public", },
+    { Name => "Private", },
+    { Name => "Action", },
+    { Name => "Notice", },
+    { Name => "Invite", },
+    { Name => "Highlight", },
+    { Name => "Notify List", },
+    { Name => "Server", },
+    { Name => "Channel", },
+    { Name => "DCC", },
+]);
 
 sub cmd_help {
     Irssi::print('Growl can be configured with these settings:');
@@ -98,36 +122,19 @@ sub get_sticky {
 }
 
 sub growl_notify {
-    my $host   = Irssi::settings_get_str('growl_net_host');
-    my $port   = Irssi::settings_get_str('growl_net_port');
-    my $pass   = Irssi::settings_get_str('growl_net_pass');
-    my $icon   = Irssi::settings_get_str('growl_net_icon');
-    my $sticky = get_sticky() == 1 ? " --sticky" : "";
-    my $name   = "Irssi";
-    
+    my $icon = "file://$ENV{'HOME'}/.irssi/" . Irssi::settings_get_str('growl_net_icon');
+    my $sticky = get_sticky();
     my ($event, $title, $message, $priority) = @_;
     $message =~ s/(")/\\$1/g;
-    
-    my $command = "growlnotify"
-        . " --name \"$name\"";
-    
-    if ($host !~ /^localhost|127\.0\.0\.1|$/) {
-        $command .=
-              " --host \"$host\""
-            . " --port \"$port\""
-            . " --password \"$pass\""
-    }
 
-    $command .=
-          " --image \"$icon\""
-        . " --priority \"$priority\""
-        . " --identifier \"$event\""
-        . " --title \"$title\""
-        . " --message \"$message\""
-        . "$sticky"
-        . " >> /dev/null 2>&1";
-
-    system($command);
+    $growl->notify(
+        Event    => $event,
+        Title    => $title,
+        Message  => $message,
+        Icon     => $icon,
+        Priotity => $priority,
+        Sticky   => $sticky
+    );
 }
 
 sub sig_message_public {
