@@ -28,7 +28,7 @@ use vars qw($VERSION %IRSSI);
 use Irssi;
 use Growl::GNTP;
 
-$VERSION = '1.0.4';
+$VERSION = '1.0.5';
 %IRSSI = (
     authors     => 'Sorin Ionescu',
     contact     => 'sorin.ionescu@gmail.com',
@@ -86,7 +86,9 @@ eval {
         { Name => "DCC", },
     ]);
 } or do {
-    Irssi::print("growl: Could not register, connection refused.");
+    if ($@) {
+        Irssi::print("growl: Could not register, connection refused.");
+    }
 };
 
 sub cmd_help {
@@ -145,7 +147,9 @@ sub growl_notify {
             Sticky   => $sticky
         );
     } or do {
-        Irssi::print('growl: Could not notify, connection refused.');
+        if ($@) {
+            Irssi::print('growl: Could not notify, connection refused.');
+        }
     };
 }
 
