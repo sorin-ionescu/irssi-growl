@@ -28,7 +28,7 @@ use vars qw($VERSION %IRSSI);
 use Irssi;
 use Growl::GNTP;
 
-$VERSION = '1.0.3';
+$VERSION = '1.0.4';
 %IRSSI = (
     authors     => 'Sorin Ionescu',
     contact     => 'sorin.ionescu@gmail.com',
@@ -72,18 +72,22 @@ my $growl = Growl::GNTP->new(
 );
 
 # Growl Registration
-$growl->register([
-    { Name => "Public", },
-    { Name => "Private", },
-    { Name => "Action", },
-    { Name => "Notice", },
-    { Name => "Invite", },
-    { Name => "Highlight", },
-    { Name => "Notify List", },
-    { Name => "Server", },
-    { Name => "Channel", },
-    { Name => "DCC", },
-]);
+eval {
+    $growl->register([
+        { Name => "Public", },
+        { Name => "Private", },
+        { Name => "Action", },
+        { Name => "Notice", },
+        { Name => "Invite", },
+        { Name => "Highlight", },
+        { Name => "Notify List", },
+        { Name => "Server", },
+        { Name => "Channel", },
+        { Name => "DCC", },
+    ]);
+} or do {
+    Irssi::print("growl: Could not register, connection refused.");
+};
 
 sub cmd_help {
     Irssi::print('Growl can be configured with these settings:');
@@ -131,14 +135,18 @@ sub growl_notify {
     my $sticky = get_sticky();
     my ($event, $title, $message, $priority) = @_;
 
-    $growl->notify(
-        Event    => $event,
-        Title    => $title,
-        Message  => $message,
-        Icon     => $icon,
-        Priotity => $priority,
-        Sticky   => $sticky
-    );
+    eval {
+        $growl->notify(
+            Event    => $event,
+            Title    => $title,
+            Message  => $message,
+            Icon     => $icon,
+            Priotity => $priority,
+            Sticky   => $sticky
+        );
+    } or do {
+        Irssi::print('growl: Could not notify, connection refused.');
+    };
 }
 
 sub sig_message_public {
