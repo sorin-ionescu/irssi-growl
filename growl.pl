@@ -130,7 +130,6 @@ sub growl_notify {
     my $icon = "file://$ENV{'HOME'}/.irssi/" . Irssi::settings_get_str('growl_net_icon');
     my $sticky = get_sticky();
     my ($event, $title, $message, $priority) = @_;
-    $message =~ s/(")/\\$1/g;
 
     $growl->notify(
         Event    => $event,
