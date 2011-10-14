@@ -207,10 +207,8 @@ sub sig_print_text {
     my $nick;
     my $msg;
     if ($dest->{level} & MSGLEVEL_HILIGHT) {
-        $stripped =~ /^\s*\b(\w+)\b[^:]*:\s*(.*)$/;
-        $nick = $1;
-        $msg = $2;
-        growl_notify("Highlight", "Highlighted Message", "$nick: $msg", 2);
+        $stripped =~ s/^\s+|\s+$//g;
+        growl_notify("Highlight", "Highlighted Message", $stripped, 2);
     }
 }
 
