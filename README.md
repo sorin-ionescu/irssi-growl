@@ -36,7 +36,7 @@ Notify on notice message. (ON/OFF/TOGGLE)
 
 Notify on channel invitation message. (ON/OFF/TOGGLE)
 
-`growl_show_hilight`
+`growl_show_highlight`
 
 Notify on nick highlight. (ON/OFF/TOGGLE)
 

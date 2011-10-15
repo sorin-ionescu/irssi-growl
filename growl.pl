@@ -28,7 +28,7 @@ use vars qw($VERSION %IRSSI);
 use Irssi;
 use Growl::GNTP;
 
-$VERSION = '1.0.5';
+$VERSION = '1.0.6';
 %IRSSI = (
     authors     => 'Sorin Ionescu',
     contact     => 'sorin.ionescu@gmail.com',
@@ -44,7 +44,7 @@ Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_message_private', 1);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_message_action', 1);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_message_notice', 0);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_message_invite', 1);
-Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_hilight', 1);
+Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_highlight', 1);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_notifylist', 1);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_server', 1);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_channel_topic', 1);
@@ -99,7 +99,7 @@ sub cmd_help {
     Irssi::print('  %ygrowl_show_message_action%n : Notify on action message. (ON/OFF/TOGGLE)');
     Irssi::print('  %ygrowl_show_message_notice%n : Notify on notice message. (ON/OFF/TOGGLE)');
     Irssi::print('  %ygrowl_show_message_invite%n : Notify on channel invitation message. (ON/OFF/TOGGLE)');
-    Irssi::print('  %ygrowl_show_hilight%n : Notify on nick highlight. (ON/OFF/TOGGLE)');
+    Irssi::print('  %ygrowl_show_highlight%n : Notify on nick highlight. (ON/OFF/TOGGLE)');
     Irssi::print('  %ygrowl_show_notifylist%n : Notify on notification list connect and disconnect. (ON/OFF/TOGGLE)');
     Irssi::print('  %ygrowl_show_server%n : Notify on server connect and disconnect. (ON/OFF/TOGGLE)');
     Irssi::print('  %ygrowl_show_channel_topic%n : Notify on channel topic change. (ON/OFF/TOGGLE)');
@@ -202,7 +202,7 @@ sub sig_message_invite {
 }
 
 sub sig_print_text {
-    return unless Irssi::settings_get_bool('growl_show_hilight');
+    return unless Irssi::settings_get_bool('growl_show_highlight');
     my ($dest, $text, $stripped) = @_;
     my $nick;
     my $msg;
