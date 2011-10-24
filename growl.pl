@@ -29,7 +29,7 @@ use Irssi;
 use Growl::GNTP;
 use IO::Socket::PortState qw(check_ports);
 
-$VERSION = '1.0.6';
+$VERSION = '1.0.7';
 %IRSSI = (
     authors     => 'Sorin Ionescu',
     contact     => 'sorin.ionescu@gmail.com',
