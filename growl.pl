@@ -135,7 +135,7 @@ sub is_growl_connectable {
     return $port_hash{tcp}{$port}{open};
 }
 
-sub get_sticky {
+sub is_notification_sticky {
     my ($server);
     $server = Irssi::active_server();
     if (Irssi::settings_get_bool('growl_net_sticky_away')) {
@@ -151,7 +151,7 @@ sub get_sticky {
 
 sub growl_notify {
     my $icon = "file://$ENV{'HOME'}/.irssi/" . Irssi::settings_get_str('growl_net_icon');
-    my $sticky = get_sticky();
+    my $sticky = is_notification_sticky();
     my ($event, $title, $message, $priority) = @_;
 
     if (!is_growl_connectable()) {
