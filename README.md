@@ -6,7 +6,7 @@ For my [Irssi](http://weechat.org) Growl plugin, see [Irssi Growl](https://githu
 
 ## Installation
 
-Make sure that you have the [Growl::GNTP](http://search.cpan.org/perldoc?Growl::GNTP) Perl module installed.
+Make sure that you have the [Growl::GNTP](http://search.cpan.org/perldoc?Growl::GNTP) and [IO::Socket::PortState](http://search.cpan.org/perldoc?IO::Socket::PortState) Perl modules installed.
 
 Move *growl.pl* to *~/.irssi/scripts/autorun/growl.pl* and *icon.png* to *~/.irssi/icon.png*.
 

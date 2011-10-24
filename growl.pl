@@ -27,6 +27,7 @@ use vars qw($VERSION %IRSSI);
 
 use Irssi;
 use Growl::GNTP;
+use IO::Socket::PortState qw(check_ports);
 
 $VERSION = '1.0.6';
 %IRSSI = (
@@ -51,8 +52,8 @@ Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_channel_topic', 1);
 Irssi::settings_add_bool($IRSSI{'name'}, 'growl_show_dcc', 1);
 
 # Network Settings
-Irssi::settings_add_str($IRSSI{'name'}, 'growl_net_host', '');
-Irssi::settings_add_str($IRSSI{'name'}, 'growl_net_port', '');
+Irssi::settings_add_str($IRSSI{'name'}, 'growl_net_host', 'localhost');
+Irssi::settings_add_str($IRSSI{'name'}, 'growl_net_port', '23053');
 Irssi::settings_add_str($IRSSI{'name'}, 'growl_net_pass', '');
 
 # Icon Settings
@@ -118,6 +119,22 @@ sub cmd_help {
     Irssi::print('  %ygrowl_net_sticky_away%n : Set sticky notifications only when away. (ON/OFF/TOGGLE)');
 }
 
+sub is_growl_connectable {
+    my $host = Irssi::settings_get_str('growl_net_host');
+    my $port = Irssi::settings_get_str('growl_net_port');
+    my $timeout = 5;
+    my %port_hash = (
+        tcp => {
+            $port => {
+                name => 'Growl',
+            },
+        },
+    );
+
+    check_ports($host, $timeout, \%port_hash);
+    return $port_hash{tcp}{$port}{open};
+}
+
 sub get_sticky {
     my ($server);
     $server = Irssi::active_server();
@@ -136,6 +153,11 @@ sub growl_notify {
     my $icon = "file://$ENV{'HOME'}/.irssi/" . Irssi::settings_get_str('growl_net_icon');
     my $sticky = get_sticky();
     my ($event, $title, $message, $priority) = @_;
+
+    if (!is_growl_connectable()) {
+        Irssi::print('growl: Could not notify, connection refused.');
+        return;
+    }
 
     eval {
         $growl->notify(
