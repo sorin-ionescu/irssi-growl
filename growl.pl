@@ -178,7 +178,7 @@ sub growl_notify {
 sub sig_message_public {
     return unless Irssi::settings_get_bool('growl_show_message_public');
     my ($server, $msg, $nick, $address, $target) = @_;
-    growl_notify("Public", "Public Message", "$nick: $msg", 0);
+    growl_notify("Public", "Public Message: $target", "$nick: $msg", 0);
 }
 
 sub sig_message_private {
@@ -196,7 +196,7 @@ sub sig_message_dcc {
 sub sig_ctcp_action {
     return unless Irssi::settings_get_bool('growl_show_message_action');
     my ($server, $args, $nick, $address, $target) = @_;
-    growl_notify("Action", "Action Message", "$nick: $args", 1);
+    growl_notify("Action", "Action Message: $target", "$nick: $args", 1);
 }
 
 sub sig_message_dcc_action {
