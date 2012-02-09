@@ -48,7 +48,6 @@ Notify on notification list connect and disconnect. (ON/OFF/TOGGLE)
 
 Notify on server connect and disconnect. (ON/OFF/TOGGLE)
 
-
 `growl_show_channel_topic`
 
 Notify on channel topic change. (ON/OFF/TOGGLE)
@@ -56,6 +55,10 @@ Notify on channel topic change. (ON/OFF/TOGGLE)
 `growl_show_dcc`
 
 Notify on DCC chat/file transfer messages. (ON/OFF/TOGGLE)
+
+`growl_channel_filter`
+
+Restrict public/action messages to certain channels. (Regular expression)
 
 ### Network Settings
 
