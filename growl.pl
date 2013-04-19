@@ -151,14 +151,13 @@ sub is_notification_sticky {
     }
 }
 
-sub growl_notify {
+sub do_notify {
     my $icon = "file://$ENV{'HOME'}/.irssi/" . Irssi::settings_get_str('growl_net_icon');
     my $sticky = is_notification_sticky();
     my ($event, $title, $message, $priority) = @_;
 
     if (!is_growl_connectable()) {
-        Irssi::print('growl: Could not notify, connection refused.');
-        return;
+        return 'growl: Could not notify, connection refused.';
     }
 
     eval {
@@ -172,9 +171,44 @@ sub growl_notify {
         );
     } or do {
         if ($@) {
-            Irssi::print('growl: Could not notify, connection refused.');
+            return 'growl: Could not notify, connection refused.';
         }
     };
+}
+
+sub read_from_notifier_child {
+    my $target = shift;
+    my $read_handler = $target->{fh};
+
+    my $result = <$read_handler>;
+    Irssi::print($result) if $result;
+
+    close($target->{fh});
+    Irssi::input_remove($target->{tag});
+}
+
+sub growl_notify {
+    pipe READ, WRITE;
+    my $pid = fork();
+
+    unless (defined($pid)) {
+        Irssi::print("growl: Can't fork - aborting");
+        return;
+    }
+
+    if ($pid > 0) {
+        # the original process, just add a listener for pipe
+        close (WRITE);
+        Irssi::pidwait_add($pid);
+        my $target = {fh => \*READ, tag => undef};
+        $target->{tag} = Irssi::input_add(fileno(READ), INPUT_READ, \&read_from_notifier_child, $target);
+    } else {
+        # the new process, fetch addresses and write to the pipe
+        print WRITE do_notify(@_);
+        close (READ);
+        close (WRITE);
+        POSIX::_exit(1);
+    }
 }
 
 sub sig_message_public {
