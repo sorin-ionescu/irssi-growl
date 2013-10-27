@@ -2,7 +2,7 @@
 
 This is a [Growl](http://growl.info) script for [Irssi](http://irssi.org/) Internet Relay Chat client.
 
-For my [Irssi](http://weechat.org) Growl plugin, see [Irssi Growl](https://github.com/sorin-ionescu/weechat-growl).
+For my [WeeChat](http://weechat.org) Growl plugin, see [WeeChat Growl](https://github.com/sorin-ionescu/weechat-growl).
 
 ## Installation
 
